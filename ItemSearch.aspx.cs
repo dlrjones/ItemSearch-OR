@@ -2,19 +2,22 @@
 using System.Configuration;
 using System.Collections.Specialized;
 using LogDefault;
-using System.Web.UI;
 using System.Data;
+using System.Web.UI.WebControls;
 using System.Data.SqlClient;
-
-
+using System.Text.RegularExpressions;
 
 namespace ItemSearch_OR
 {
-    public partial class ItemSearch : System.Web.UI.Page
+    public class HyperLink : WebControl
     {
-        //private string logFilePath = "";
-        //private string logFile = "";
-        //private bool debug = false;
+        public string NavigateUrl = "https://www.google.com/search?site=imghp&tbm=isch&source=hp&biw=1600&bih=771&q=";
+        public string Text = "";
+
+        public HyperLink() { }
+    }
+        public partial class ItemSearch : System.Web.UI.Page
+    {
         private NameValueCollection ConfigData = null;
         private LogManager lm = LogManager.GetInstance();
         private SqlConnection dbaseConn;
@@ -31,7 +34,10 @@ namespace ItemSearch_OR
     
         private DataTable ReadDataSet(SqlDataReader dr)
         {
+            string url = "";
             string colData = "";
+            string description = "";
+            HyperLink hLink = new HyperLink();            
             DataTable dt = new DataTable();
             dt.Columns.Add("ITEM NO", typeof(string));
             dt.Columns.Add("CTLG NO", typeof(string));
@@ -40,36 +46,37 @@ namespace ItemSearch_OR
             dt.Columns.Add("PKG STR", typeof(string));
             dt.Columns.Add("TO UM", typeof(string));
             dt.Columns.Add("PRICE", typeof(string));
-            dt.Columns.Add("DESC", typeof(string));
+            dt.Columns.Add("DESCR", typeof(string));
             dt.Columns.Add("DESC1", typeof(string));
             dt.Columns.Add("DESC2", typeof(string));
             dt.Columns.Add("UW ITEM", typeof(string));
+            dt.Columns.Add("imgSearch", typeof(string));
             try
             {
                 while (dr.Read())
                 {
-                    dt.Rows.Add(dr[0].ToString().Trim(),
+                    description = dr[7].ToString().Trim();
+                    dt.Rows.Add(
+                        dr[0].ToString().Trim(),
                         dr[1].ToString().Trim(),
                         dr[2].ToString().Trim(),
                         dr[3].ToString().Trim(),
                         dr[4].ToString().Trim(),
                         dr[5].ToString().Trim(),
-                        dr[6].ToString().Trim(),
-                        dr[7].ToString().Trim(),
+                        dr[6].ToString().Trim(),                        
+                        "<a href =\"" + hLink.NavigateUrl + description + "\" target =\"_blank\">" + description + " </a>",
                         dr[8].ToString().Trim(),
                         dr[9].ToString().Trim(),
                         dr[10].ToString().Trim());
                 }
-
-            }catch(Exception ex)
+            }
+            catch(Exception ex)
             {
                 lm.Write(ex.Message);
             }
-            return dt;
-            
-
+            return dt;            
         }
-
+       
         protected void btnSearch_Click(object sender, EventArgs e)
         {
             string itemNo = "";
@@ -81,6 +88,7 @@ namespace ItemSearch_OR
             {
                 if (rblSearch.SelectedValue.Trim().Length > 0)
                 {
+                    //the sql scripts are in a seperate class
                     sql = GetSQL(rblSearch.SelectedValue, txtSearch.Text.Trim());
                     dbaseConn = new SqlConnection(Session["connect"].ToString());
                     SqlCommand comm = new SqlCommand(sql, dbaseConn);
@@ -93,7 +101,6 @@ namespace ItemSearch_OR
                     lblCount.Text = gvItemResults.Rows.Count.ToString();
                     dbaseConn.Close();
                 }
-
             }
             catch (Exception ex)
             {

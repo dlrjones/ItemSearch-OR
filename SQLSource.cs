@@ -32,8 +32,7 @@ namespace ItemSearch_OR
             return "SELECT I.ITEM_NO as [Item No], I.CTLG_NO as [Catalog No],substring(L.NAME, 5, len(L.NAME)) as Location, SIB.BIN_LOC as Bin, " +
                    "PKG_STR.PKG_STR,substring(IVP.TO_UM_CD, 7, 2) as [To UM], '$' + CONVERT(VARCHAR(12), CONVERT(MONEY, IVP.PRICE)) as [Price], " +
                    "I.DESCR as Description, I.DESCR1 as [Surgery Description],I.DESCR2 AS [Nursing Description], " +
-                   "[UW ITEM].System_ItemNo AS [UW_ITEM] " +
-
+                   "[UW ITEM].System_ItemNo AS [UW_ITEM]" +
                    "FROM [h-hemm].dbo.SLOC_ITEM SI  " +
                    "INNER JOIN [h-hemm].dbo.ITEM I ON SI.ITEM_ID = I.ITEM_ID  " +
                    "INNER JOIN [h-hemm].dbo.LOC L ON SI.LOC_ID = L.LOC_ID  " +
