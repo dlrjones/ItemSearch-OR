@@ -11,10 +11,19 @@ namespace ItemSearch_OR
 {
     public class HyperLink : WebControl
     {
-        public string NavigateUrl = "https://www.google.com/search?site=imghp&tbm=isch&source=hp&biw=1600&bih=771&q=";
-        public string Text = "";
+        private string navigateUrl = "https://www.google.com/search?site=imghp&tbm=isch&source=hp&biw=1600&bih=771&q=";
+        private string descr = "";
 
         public HyperLink() { }
+        public string NavigateUrl
+        {
+            get { return navigateUrl + descr; }
+        }
+        public string Descr
+        {
+            get { return descr; }
+            set { descr = value; }
+        }
     }
         public partial class ItemSearch : System.Web.UI.Page
     {
@@ -49,13 +58,12 @@ namespace ItemSearch_OR
             dt.Columns.Add("DESCR", typeof(string));
             dt.Columns.Add("DESC1", typeof(string));
             dt.Columns.Add("DESC2", typeof(string));
-            dt.Columns.Add("UW ITEM", typeof(string));
-            dt.Columns.Add("imgSearch", typeof(string));
+            dt.Columns.Add("UW ITEM", typeof(string));            
             try
             {
                 while (dr.Read())
                 {
-                    description = dr[7].ToString().Trim();
+                    hLink.Descr = dr[7].ToString().Trim();
                     dt.Rows.Add(
                         dr[0].ToString().Trim(),
                         dr[1].ToString().Trim(),
@@ -64,7 +72,7 @@ namespace ItemSearch_OR
                         dr[4].ToString().Trim(),
                         dr[5].ToString().Trim(),
                         dr[6].ToString().Trim(),                        
-                        "<a href =\"" + hLink.NavigateUrl + description + "\" target =\"_blank\">" + description + " </a>",
+                        "<a href =\"" + hLink.NavigateUrl + "\" target =\"_blank\">" + hLink.Descr + " </a>",
                         dr[8].ToString().Trim(),
                         dr[9].ToString().Trim(),
                         dr[10].ToString().Trim());
